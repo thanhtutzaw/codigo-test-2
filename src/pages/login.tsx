@@ -1,15 +1,12 @@
+import { AuthContext, AuthProps } from "@/context/AuthContext";
 import { useRouter } from "next/router";
-import React, {
-  FormEvent,
-  MouseEvent,
-  MouseEventHandler,
-  useState,
-} from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const { account, setaccount } = useContext(AuthContext) as AuthProps;
   const router = useRouter();
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,18 +14,35 @@ function Login() {
     const name = new FormData(e.currentTarget).get("username");
     const password = new FormData(e.currentTarget).get("password");
     setTimeout(() => {
-      console.log({ auth: { name, password } });
+      localStorage.setItem(
+        "auth",
+        JSON.stringify({ username: name, password } as AuthProps["account"])
+      );
+
       setLoginLoading(false);
       setLoginSuccess(true);
+      setaccount?.({ username: name, password });
+      router.push("/");
+
+      if (!localStorage.getItem("auth")) return;
+      // setaccount(JSON.parse(localStorage.getItem("auth") ?? ""));
+      console.log(JSON.parse(localStorage.getItem("auth") ?? ""));
+      // setaccount?.(JSON.parse(localStorage.getItem("auth") ?? ""));
       router.push("/");
     }, 1000);
   }
 
+  // useEffect(() => {
+  //   if (!account?.username || !account.password) {
+  //     router.push("/");
+  //   }
+  // }, [account, router]);
+  if (account) return;
   return (
     <div className="flex justify-center items-center h-full">
       <form
         onSubmit={handleSubmit}
-        className="shadow-md flex gap-4 flex-1 h-96 flex-col justify-center items-start bg-gray-200 p-4 rounded-md"
+        className="shadow-md min-w-[300px] flex gap-4 flex-1 h-96 flex-col justify-center items-start bg-gray-200 p-4 rounded-md"
       >
         <h1 className="font-bold mb-2 text-blue-500 text-2xl">Login</h1>
         <input
