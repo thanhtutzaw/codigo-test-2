@@ -23,8 +23,8 @@ export function AuthProvider(props: AuthProps) {
   const router = useRouter();
   const handleLogout = useCallback(() => {
     localStorage.removeItem("auth");
-    // router.push("login");
     setaccount(null);
+    router.push("/login");
   }, []);
   useEffect(() => {
     if (localStorage.getItem("auth")) {

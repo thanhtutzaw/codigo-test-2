@@ -1,29 +1,26 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import { useContext, useEffect } from "react";
 import { AuthContext, AuthProps } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { Inter } from "next/font/google";
+import { useRouter } from "next/router";
+import { useContext, useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const { handleLogout, account } = useContext(AuthContext) as AuthProps;
   const router = useRouter();
-  // useEffect(() => {
-  //   if (!account) {
-  //     router.push("/login");
-  //   } else {
-  //     router.push("/");
-  //   }
-  // }, [account, router]);
-
-  // if (!account) return JSON.stringify(account);
+  useEffect(() => {
+    if(!account){
+      router.push("/login")
+    }
+  }, [account, router])
+  
+  if(!account) return;
   return (
     <main className={`min-h-full p-24 ${inter.className}`}>
       <aside className="rounded-lg shadow-md bg-gray-100 p-4 absolute top-0 right-0">
-        <p className="text-blue-500 font-bold">User : {account?.username} </p>
+        <p className="text-blue-500 font-bold">User - {account?.username} </p>
         <button
-          className="font-bold text-red-500"
+          className="hover:opacity-70 active:opacity-50 transition-[opacity] duration-75 ease font-bold text-red-500"
           onClick={() => {
             handleLogout?.();
           }}

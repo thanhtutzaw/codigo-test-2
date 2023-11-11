@@ -25,18 +25,10 @@ function Login() {
       router.push("/");
 
       if (!localStorage.getItem("auth")) return;
-      // setaccount(JSON.parse(localStorage.getItem("auth") ?? ""));
       console.log(JSON.parse(localStorage.getItem("auth") ?? ""));
-      // setaccount?.(JSON.parse(localStorage.getItem("auth") ?? ""));
       router.push("/");
     }, 1000);
   }
-
-  // useEffect(() => {
-  //   if (!account?.username || !account.password) {
-  //     router.push("/");
-  //   }
-  // }, [account, router]);
   if (account) return;
   return (
     <div className="flex justify-center items-center h-full">
