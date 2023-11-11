@@ -1,4 +1,5 @@
 import { AuthContext, AuthProps } from "@/context/AuthContext";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { useRouter } from "next/router";
 import { FormEvent, useContext, useEffect, useState } from "react";
 
@@ -8,24 +9,20 @@ function Login() {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const { account, setaccount } = useContext(AuthContext) as AuthProps;
   const router = useRouter();
+  const { setLocal } = useLocalStorage("auth");
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoginLoading(true);
     const name = new FormData(e.currentTarget).get("username");
     const password = new FormData(e.currentTarget).get("password");
     setTimeout(() => {
-      localStorage.setItem(
-        "auth",
-        JSON.stringify({ username: name, password } as AuthProps["account"])
-      );
-
+      setLocal({ username: name, password } as AuthProps["account"]);
+      setaccount?.({ username: name, password });
       setLoginLoading(false);
       setLoginSuccess(true);
-      setaccount?.({ username: name, password });
       router.push("/");
 
       if (!localStorage.getItem("auth")) return;
-      console.log(JSON.parse(localStorage.getItem("auth") ?? ""));
       router.push("/");
     }, 1000);
   }
