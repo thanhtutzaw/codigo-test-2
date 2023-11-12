@@ -25,7 +25,7 @@ export default function Home() {
       // router.push("/login");
     }
   }, [account, router]);
-  const { teams, addTeam } = useTeams();
+  const { teams, addTeam, teamLoading, teamError } = useTeams();
 
   if (!account) return;
   return (
@@ -72,7 +72,7 @@ export default function Home() {
 
         <section className="min-h-screen min-w-[48%]  rounded-lg bg-white  ">
           <h2 className="min-h-[60px] items-center shadow-md sticky bg-white top-[65px] flex justify-between p-2 text-blue-500 text-xl my-2">
-            <div>Teams</div> <div>{players.length > 0 && players.length}</div>
+            <div>Teams</div> <div>{teams?.length > 0 && teams.length}</div>
             <button
               onClick={() => {
                 addTeam();
@@ -82,14 +82,14 @@ export default function Home() {
               Create New Team
             </button>
           </h2>
-          {playerLoading ? (
+          {teamLoading ? (
             <p className="text-center mt-2 p-2">Loading...</p>
-          ) : playerError ? (
-            <p>{playerError}</p>
+          ) : teamError ? (
+            <p>{teamError}</p>
           ) : (
             <ul className="bg-white">
               {/* {JSON.stringify(teams)} */}
-              {teams.map((t, index) => (
+              {teams?.map((t, index) => (
                 <TeamList key={index} index={index} t={t} />
               ))}
               {/* {playerMeta?.next_page && (

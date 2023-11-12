@@ -36,29 +36,30 @@ export type TPlayerMeta = {
   total_pages: number;
 };
 function useTeams() {
-  const [teams, setTeams] = useState<TTeam[]>([]);
-  // const [playerMeta, setplayerMeta] = useState<TPlayerMeta | null>(null);
-  // const [page, setPage] = useState(1);
+  const [teams, setTeams] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [Error, setError] = useState<any>(null);
   const bottomRef = useRef(null);
-  const bottomElement = bottomRef.current!;
   const { getLocal, setLocal } = useLocalStorage("teams");
+  let id = 1;
   function addTeam() {
-    setLocal([
-      { id: 1, name: "hello" },
-      { id: 2, name: "hello2" },
-    ]);
+    id = !teams?.length ? 1 : teams.length + 1;
+    const data = { id: id ?? 1, name: "hello" };
+    setTeams([...(teams ?? []), data]);
+    setLocal([...(teams ?? []), data]);
+  }
+  function deleteTeam(id: number) {
+    setTeams(teams.filter((t) => id !== t.id));
+    // setLocal([...teams, { id: 1, name: "hello" }]);
   }
   useEffect(() => {
     async function fetchTeams() {
       setLoading(true);
       try {
-        const team = getLocal() as TTeam;
+        const teams = getLocal() as any;
+        console.log(teams);
         setLoading(false);
-        setTeams([team]);
-        // setTeams([...data.data]);
-        // setPlayers((prev) => [...prev, ...data.data]);
+        setTeams(teams);
         setError(null);
       } catch (error) {
         setError(error);
