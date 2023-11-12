@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import useLocalStorage from "./useLocalStorage";
 export const LIMIT = 10;
 export const APIURL = "https://www.balldontlie.io/api/v1/players";
 export type TTeam = {
@@ -34,24 +35,30 @@ export type TPlayerMeta = {
   total_count: number;
   total_pages: number;
 };
-function usePlayer() {
-  const [players, setPlayers] = useState<TPlayer[]>([]);
-  const [playerMeta, setplayerMeta] = useState<TPlayerMeta | null>(null);
-  const [page, setPage] = useState(1);
+function useTeams() {
+  const [teams, setTeams] = useState<TTeam[]>([]);
+  // const [playerMeta, setplayerMeta] = useState<TPlayerMeta | null>(null);
+  // const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [Error, setError] = useState<any>(null);
   const bottomRef = useRef(null);
   const bottomElement = bottomRef.current!;
+  const { getLocal, setLocal } = useLocalStorage("teams");
+  function addTeam() {
+    setLocal([
+      { id: 1, name: "hello" },
+      { id: 2, name: "hello2" },
+    ]);
+  }
   useEffect(() => {
-    async function fetchPlayers() {
+    async function fetchTeams() {
       setLoading(true);
       try {
-        const response = await fetch(`${APIURL}?page=${1}&per_page=${LIMIT}`);
-        const data = await response.json();
+        const team = getLocal() as TTeam;
         setLoading(false);
-        setPlayers([...data.data]);
+        setTeams([team]);
+        // setTeams([...data.data]);
         // setPlayers((prev) => [...prev, ...data.data]);
-        setplayerMeta(data.meta);
         setError(null);
       } catch (error) {
         setError(error);
@@ -59,8 +66,8 @@ function usePlayer() {
         console.log(error);
       }
     }
-    fetchPlayers();
-  }, []);
+    fetchTeams();
+  }, [getLocal, setLocal]);
   const handleLoadMore = useCallback(async () => {
     // setPage(page + 1);
     try {
@@ -70,8 +77,6 @@ function usePlayer() {
       // const startIndex = (page - 1) * LIMIT;
       // const endIndex = startIndex + total_count_per_page;
       // const indexOfLastPlayer = page * LIMIT;
-      const response = await fetch(`${APIURL}?page=${page}&per_page=${LIMIT}`);
-      const data = await response.json();
       // console.log(indexOfLastPlayer);
       // const indexOfFirstPlayer = indexOfLastPlayer - LIMIT;
       // console.log(indexOfFirstPlayer);
@@ -97,10 +102,7 @@ function usePlayer() {
       //   setPlayers([...players, ...data.data]);
 
       // Set the players
-      setPlayers([...players, ...data.data]);
       // setPlayers([...players, ...data.data]);
-      setplayerMeta(data.meta);
-      setPage(page + 1);
       // if (players.length < total_count_per_page) {
       // } else {
       //   setPage((prev) => prev + 1);
@@ -112,30 +114,30 @@ function usePlayer() {
     } finally {
       //   setLoading(false);
     }
-  }, [page, players]);
-  useEffect(() => {
-    const observer = new IntersectionObserver(async (entries) => {
-      console.log(entries);
-      if (entries[0].isIntersecting) {
-        await handleLoadMore();
-      }
-    });
-    if (!bottomElement) return;
-    observer.observe(bottomElement);
-    return () => {
-      observer.unobserve(bottomElement);
-    };
-  }, [bottomElement, handleLoadMore]);
+  }, []);
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(async (entries) => {
+  //     console.log(entries);
+  //     if (entries[0].isIntersecting) {
+  //       await handleLoadMore();
+  //     }
+  //   });
+  //   if (!bottomElement) return;
+  //   observer.observe(bottomElement);
+  //   return () => {
+  //     observer.unobserve(bottomElement);
+  //   };
+  // }, [bottomElement, handleLoadMore]);
 
   return {
+    addTeam,
     bottomRef,
     handleLoadMore,
-    playerError: Error,
-    playerLoading: loading,
-    players,
-    playerMeta,
-    setPlayers,
+    teamError: Error,
+    teamLoading: loading,
+    teams,
+    setTeams,
   };
 }
 
-export default usePlayer;
+export default useTeams;

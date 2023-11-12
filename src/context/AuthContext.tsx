@@ -19,14 +19,21 @@ export type AuthProps = {
   children: ReactNode;
 } & ReturnType<typeof usePlayer>;
 export const AuthContext = createContext<AuthProps | null>(null);
-export function AuthProvider(props: AuthProps) {
-  const { children } = props;
+export function AuthProvider(props: any) {
   const [account, setaccount] = useState<AuthProps["account"] | null>(null);
   const router = useRouter();
   const { deleteLocal } = useLocalStorage("auth");
-  const { playerError, players, playerLoading, playerMeta } = usePlayer();
+  const {
+    bottomRef,
+    handleLoadMore,
+    playerError,
+    players,
+    playerLoading,
+    playerMeta,
+  } = usePlayer();
   const handleLogout = useCallback(() => {
-    localStorage.removeItem("auth");
+    // localStorage.removeItem("auth");
+    deleteLocal();
     setaccount(null);
     router.push("/login");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,6 +52,8 @@ export function AuthProvider(props: AuthProps) {
     <AuthContext.Provider
       value={{
         ...props,
+        bottomRef: bottomRef,
+        handleLoadMore: handleLoadMore,
         playerError: playerError,
         playerMeta: playerMeta,
         playerLoading: playerLoading,
@@ -54,7 +63,7 @@ export function AuthProvider(props: AuthProps) {
         handleLogout: handleLogout,
       }}
     >
-      {children}
+      {props.children}
     </AuthContext.Provider>
   );
 }

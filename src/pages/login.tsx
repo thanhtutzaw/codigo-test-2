@@ -35,6 +35,7 @@ function Login() {
       >
         <h1 className="font-bold mb-2 text-blue-500 text-2xl">Login</h1>
         <input
+          defaultValue={" jk@gmail.com"}
           placeholder="Username"
           className="p-[5px_10px] rounded-lg"
           required
@@ -42,6 +43,7 @@ function Login() {
         />
         <div>
           <input
+            defaultValue={"222222"}
             placeholder="Password"
             minLength={6}
             className="p-[5px_10px] rounded-lg"

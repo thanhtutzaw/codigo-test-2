@@ -15,9 +15,12 @@ export default function useLocalStorage<T>(key: string, value?: T) {
   //     setLocal();
   //   };
   // }, [stringifiedValue, key]);
-  function setLocal(value: unknown) {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
+  const setLocal = useCallback(
+    function (value: unknown) {
+      localStorage.setItem(key, JSON.stringify(value));
+    },
+    [key]
+  );
   const getLocal = useCallback((): T | null => {
     const value = localStorage.getItem(key);
     // console.log(value ? JSON.parse(value) : null);

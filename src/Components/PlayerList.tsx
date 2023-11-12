@@ -18,10 +18,11 @@ function PlayerList({ player }: { player: TPlayer }) {
       <p className="flex flex-1">
         {id}. {fullName}
       </p>
-      <button className="hover:opacity-90 active:scale-90 bg-blue-500 p-2 rounded-md text-white">
+      <p className="flex flex-1">Teams {team.name}</p>
+      <button className="select-none hover:opacity-90 active:scale-90 bg-blue-500 p-2 rounded-md text-white">
         Update
       </button>
-      <button className="hover:opacity-90 active:scale-90 bg-red-500 p-2 rounded-md text-white">
+      <button className="select-none hover:opacity-90 active:scale-90 bg-red-500 p-2 rounded-md text-white">
         Delete
       </button>
     </li>

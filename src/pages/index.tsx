@@ -1,5 +1,7 @@
 import PlayerList from "@/Components/PlayerList";
+import TeamList from "@/Components/TeamList";
 import { AuthContext, AuthProps } from "@/context/AuthContext";
+import useTeams from "@/hooks/useTeams";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
@@ -8,6 +10,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const {
+    bottomRef,
+    handleLoadMore,
     playerError,
     playerLoading,
     handleLogout,
@@ -18,9 +22,10 @@ export default function Home() {
   const router = useRouter();
   useEffect(() => {
     if (!account) {
-      router.push("/login");
+      // router.push("/login");
     }
   }, [account, router]);
+  const { teams, addTeam } = useTeams();
 
   if (!account) return;
   return (
@@ -38,23 +43,68 @@ export default function Home() {
           Logout
         </button>
       </header>
-      {playerLoading ? (
-        <p className="text-center bg-zinc-300 mt-2 p-2">Loading...</p>
-      ) : playerError ? (
-        <p>{playerError}</p>
-      ) : (
-        <>
-          <ul className="bg-white">
-            {players.map((player) => (
-              <PlayerList key={player.id} player={player} />
-            ))}
-            {playerMeta?.next_page && (
-              <p className="text-center bg-zinc-300 mt-2 p-2">Loading...</p>
-            )}
-          </ul>
-        </>
-      )}
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex"></div>
+      <div className="md:flex gap-4 justify-between">
+        <section className="min-h-screen min-w-[48%] rounded-lg bg-white ">
+          <h2 className="min-h-[60px] items-center shadow-md sticky bg-white top-[65px] flex justify-between p-2 text-blue-500 text-xl my-2">
+            <div>Players</div> <div>{players.length > 0 && players.length}</div>
+          </h2>
+          {playerLoading ? (
+            <p className="text-center mt-2 p-2">Loading...</p>
+          ) : playerError ? (
+            <p>{playerError}</p>
+          ) : (
+            <ul className="bg-white">
+              {players.map((player) => (
+                <PlayerList key={player.id} player={player} />
+              ))}
+              {playerMeta?.next_page && (
+                <p
+                  ref={bottomRef!}
+                  onClick={async () => await handleLoadMore?.()}
+                  className="text-center bg-zinc-300 mt-2 p-2"
+                >
+                  Loading...
+                </p>
+              )}
+            </ul>
+          )}
+        </section>
+
+        <section className="min-h-screen min-w-[48%]  rounded-lg bg-white  ">
+          <h2 className="min-h-[60px] items-center shadow-md sticky bg-white top-[65px] flex justify-between p-2 text-blue-500 text-xl my-2">
+            <div>Teams</div> <div>{players.length > 0 && players.length}</div>
+            <button
+              onClick={() => {
+                addTeam();
+              }}
+              className="active:bg-gray-100 hover:bg-gray-100 rounded-md active:scale-95 transition:all duration-75 ease-in-out active:opacity-90 p-2"
+            >
+              Create New Team
+            </button>
+          </h2>
+          {playerLoading ? (
+            <p className="text-center mt-2 p-2">Loading...</p>
+          ) : playerError ? (
+            <p>{playerError}</p>
+          ) : (
+            <ul className="bg-white">
+              {/* {JSON.stringify(teams)} */}
+              {teams.map((t, index) => (
+                <TeamList key={index} index={index} t={t} />
+              ))}
+              {/* {playerMeta?.next_page && (
+                <p
+                  ref={bottomRef!}
+                  onClick={async () => await handleLoadMore?.()}
+                  className="text-center bg-zinc-300 mt-2 p-2"
+                >
+                  Loading...
+                </p>
+              )} */}
+            </ul>
+          )}
+        </section>
+      </div>
     </main>
   );
 }
