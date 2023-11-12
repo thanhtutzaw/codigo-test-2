@@ -25,7 +25,7 @@ export default function Home() {
       // router.push("/login");
     }
   }, [account, router]);
-  const { teams, addTeam, teamLoading, teamError } = useTeams();
+  const { deleteTeam,teams, addTeam, teamLoading, teamError } = useTeams();
 
   if (!account) return;
   return (

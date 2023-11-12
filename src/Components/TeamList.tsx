@@ -1,12 +1,14 @@
 import { TPlayer } from "@/hooks/usePlayer";
+import useTeams from "@/hooks/useTeams";
 import React from "react";
 
 function TeamList({ t, index }: { t: any; index: number }) {
   // const { id, full_name, abbreviation, city, conference, division, name } =
   //   team;
   console.log(t);
+  const { deleteTeam, teams, addTeam, teamLoading, teamError } = useTeams();
   // return JSON.stringify(t);
-  if(!t) return <p>Empty</p>
+  if (!t) return <p>Empty</p>;
   return (
     <li className="hover:bg-gray-200 justify-content items-center flex gap-2 p-4 bg-neutral-100">
       <p className="flex flex-1">
@@ -18,7 +20,8 @@ function TeamList({ t, index }: { t: any; index: number }) {
       </button>
       <button
         onClick={() => {
-          // setTeam()
+          console.log(t.id);
+          deleteTeam(t.id);
         }}
         className="select-none hover:opacity-90 active:scale-90 bg-red-500 p-2 rounded-md text-white"
       >

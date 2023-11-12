@@ -49,8 +49,11 @@ function useTeams() {
     setLocal([...(teams ?? []), data]);
   }
   function deleteTeam(id: number) {
-    setTeams(teams.filter((t) => id !== t.id));
-    // setLocal([...teams, { id: 1, name: "hello" }]);
+    console.log(teams);
+    const d = teams.filter((t) => t.id !== id);
+    console.log(d);
+    setTeams(d);
+    setLocal(d);
   }
   useEffect(() => {
     async function fetchTeams() {
@@ -131,6 +134,7 @@ function useTeams() {
   // }, [bottomElement, handleLoadMore]);
 
   return {
+    deleteTeam,
     addTeam,
     bottomRef,
     handleLoadMore,
