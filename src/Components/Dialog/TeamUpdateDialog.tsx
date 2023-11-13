@@ -23,7 +23,7 @@ export function TeamUpdateDialog(props: {
       className="rounded-md backdrop:bg-black/50"
       ref={teamEditDialog}
       onClose={() => {
-        teamEditDialog.current?.reset();
+        teamFormRef.current?.reset();
         setTeamNameError("");
       }}
     >
