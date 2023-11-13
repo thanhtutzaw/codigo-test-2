@@ -127,7 +127,6 @@ function Home() {
                 ))}
               </ul>
               <TeamDialog
-                key={TeamNameError}
                 teamModalRef={teamModalRef}
                 setTeamNameError={setTeamNameError}
                 teamFormRef={teamFormRef}
@@ -136,7 +135,6 @@ function Home() {
                 setTeamNameInput={setTeamNameInput}
               />
               <TeamUpdateDialog
-                key={TeamNameError}
                 TeamEditForm={TeamEditForm}
                 teamEditDialog={teamEditDialog}
                 setTeamNameError={setTeamNameError}
