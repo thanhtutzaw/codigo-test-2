@@ -35,6 +35,28 @@ function useTeams() {
     setTeams((prev) => ({ ...prev, data: [...teams?.data, newTeam] }));
     setLocal([...(data ?? []), newTeam]);
   }
+  function updateTeam(updatedTeam: TTeam, id: string | number) {
+    setTeams((prev) => ({
+      ...prev,
+      data: data.map((team) => {
+        if (team.id === id) {
+          team.name = updatedTeam.name;
+          team.city = updatedTeam.city;
+        }
+        return team;
+      }),
+    }));
+
+    setLocal(
+      data.map((team) => {
+        if (team.id === id) {
+          team.name = updatedTeam.name;
+          team.city = updatedTeam.city;
+        }
+        return team;
+      })
+    );
+  }
   function deleteTeam(id: number) {
     setTeams((prev) => ({
       ...prev,
@@ -67,6 +89,7 @@ function useTeams() {
     addTeam,
     bottomRef,
     setTeams,
+    updateTeam,
   };
 }
 

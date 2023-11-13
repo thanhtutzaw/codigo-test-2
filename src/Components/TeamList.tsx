@@ -2,10 +2,12 @@ import { TTeam } from "@/hooks/useTeams";
 import React, { memo } from "react";
 
 function TeamList({
+  toggleEditForm,
   deleteTeam,
   team,
   index,
 }: {
+  toggleEditForm: Function;
   deleteTeam: Function;
   team: TTeam;
   index: number;
@@ -24,7 +26,12 @@ function TeamList({
           <p>{team?.city}</p>
         </div>
         {/* <p className="flex flex-1">Teams {team.name}</p> */}
-        <button className="select-none hover:opacity-90 active:scale-90 bg-blue-500 p-2 rounded-md text-white">
+        <button
+          onClick={() => {
+            toggleEditForm(team);
+          }}
+          className="select-none hover:opacity-90 active:scale-90 bg-blue-500 p-2 rounded-md text-white"
+        >
           Update
         </button>
         <button

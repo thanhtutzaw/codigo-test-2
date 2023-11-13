@@ -1,3 +1,5 @@
+import { TeamDialog } from "@/Components/Dialog/TeamDialog";
+import { TeamUpdateDialog } from "@/Components/Dialog/TeamUpdateDialog";
 import PlayerList from "@/Components/PlayerList";
 import TeamList from "@/Components/TeamList";
 import { AuthContext, AuthProps } from "@/context/AuthContext";
@@ -27,18 +29,16 @@ function Home() {
       // router.push("/login");
     }
   }, [account, router]);
-  const { deleteTeam, teams, addTeam } = useTeams();
+  const { deleteTeam, teams, addTeam, updateTeam } = useTeams();
   const teamModalRef = useRef<HTMLDialogElement>(null);
   const [TeamNameInput, setTeamNameInput] = useState("");
   const { debounceValue } = useDebounce(TeamNameInput);
   const { getLocal } = useLocalStorage("teams");
   const [TeamNameError, setTeamNameError] = useState("");
   useEffect(() => {
-    // console.log(debounceValue);
     const localTeamData = getLocal() as TTeam[];
-    // console.log(localTeamData.filter((t) => t.name === debounceValue));
     const nameExist = localTeamData.find(
-      (t) => t.name.toLowerCase() === debounceValue.toLowerCase()
+      (team) => team.name.toLowerCase() === debounceValue.toLowerCase()
     );
     if (nameExist) {
       setTeamNameError("Name Already Exist");
@@ -47,6 +47,12 @@ function Home() {
     setTeamNameError("");
   }, [debounceValue, getLocal]);
   const teamFormRef = useRef<HTMLFormElement>(null);
+  const teamEditDialog = useRef<HTMLFormElement>(null);
+  const [TeamEditForm, setTeamEditForm] = useState<TTeam | null>(null);
+  const toggleEditForm = (team: TTeam) => {
+    teamEditDialog.current && teamEditDialog.current.showModal();
+    setTeamEditForm(team);
+  };
   if (!account) return;
   return (
     <main
@@ -112,6 +118,7 @@ function Home() {
               <ul className="bg-white">
                 {teams?.data?.map((team, index) => (
                   <TeamList
+                    toggleEditForm={toggleEditForm}
                     deleteTeam={deleteTeam}
                     key={index}
                     index={index}
@@ -119,68 +126,23 @@ function Home() {
                   />
                 ))}
               </ul>
-              <dialog
-                className="rounded-md backdrop:bg-black/50"
-                ref={teamModalRef}
-                onClose={() => {
-                  teamFormRef.current?.reset();
-                  setTeamNameError("");
-                }}
-              >
-                <form
-                  ref={teamFormRef}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (TeamNameError) {
-                      return;
-                    }
-                    const form = new FormData(e.currentTarget);
-
-                    addTeam({
-                      name: form.get("teamName"),
-                      city: form.get("city"),
-                    });
-                    teamModalRef?.current?.close();
-                  }}
-                  className=" min-h-[40vh] h-48 p-4 shadow-md flex flex-col gap-4"
-                >
-                  <header className="flex justify-between items-center">
-                    <h1 className="font-bold text-blue-500 text-xl">
-                      Create New Team
-                    </h1>
-                    <button
-                      disabled={!!TeamNameError}
-                      className="disabled:opacity-50 hover:bg-zinc-100 select-none active:scale-95 focus-visible:outline rounded-lg p-2  focus-visible:outline-blue-500"
-                      type="submit"
-                    >
-                      Done
-                    </button>
-                  </header>
-                  {/* <label className="flex flex-col text-gray-500" form="teamName">
-                    Team Name */}
-                  <input
-                    onChange={(e) => {
-                      const name = e.currentTarget.value;
-                      setTeamNameInput(name);
-                    }}
-                    className="border-b border-solid border-gray-400 p-2"
-                    type="text"
-                    name="teamName"
-                    placeholder="Name"
-                    required
-                  />
-                  <p className="text-red-500">
-                    {TeamNameError && TeamNameError}
-                  </p>
-                  <input
-                    className="border-b border-solid border-gray-400 p-2"
-                    type="text"
-                    name="city"
-                    defaultValue="Yangon"
-                    placeholder="City"
-                  />
-                </form>
-              </dialog>
+              <TeamDialog
+                teamModalRef={teamModalRef}
+                setTeamNameError={setTeamNameError}
+                teamFormRef={teamFormRef}
+                TeamNameError={TeamNameError}
+                addTeam={addTeam}
+                setTeamNameInput={setTeamNameInput}
+              />
+              <TeamUpdateDialog
+                TeamEditForm={TeamEditForm}
+                teamEditDialog={teamEditDialog}
+                setTeamNameError={setTeamNameError}
+                teamFormRef={teamFormRef}
+                TeamNameError={TeamNameError}
+                updateTeam={updateTeam}
+                setTeamNameInput={setTeamNameInput}
+              />
             </>
           )}
         </section>
