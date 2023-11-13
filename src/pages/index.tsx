@@ -4,11 +4,11 @@ import { AuthContext, AuthProps } from "@/context/AuthContext";
 import useTeams from "@/hooks/useTeams";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
-import { useContext, useEffect } from "react";
+import { memo, useContext, useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+function Home() {
   const {
     bottomRef,
     handleLoadMore,
@@ -25,7 +25,7 @@ export default function Home() {
       // router.push("/login");
     }
   }, [account, router]);
-  const { deleteTeam,teams, addTeam, teamLoading, teamError } = useTeams();
+  const { deleteTeam, teams, addTeam } = useTeams();
 
   if (!account) return;
   return (
@@ -72,7 +72,7 @@ export default function Home() {
 
         <section className="min-h-screen min-w-[48%]  rounded-lg bg-white  ">
           <h2 className="min-h-[60px] items-center shadow-md sticky bg-white top-[65px] flex justify-between p-2 text-blue-500 text-xl my-2">
-            <div>Teams</div> <div>{teams?.length > 0 && teams.length}</div>
+            <div>Teams</div> <div>{teams?.data?.length > 0 && teams?.data?.length}</div>
             <button
               onClick={() => {
                 addTeam();
@@ -82,25 +82,20 @@ export default function Home() {
               Create New Team
             </button>
           </h2>
-          {teamLoading ? (
+          {teams.loading ? (
             <p className="text-center mt-2 p-2">Loading...</p>
-          ) : teamError ? (
-            <p>{teamError}</p>
+          ) : teams.error ? (
+            <p>{teams.error}</p>
           ) : (
             <ul className="bg-white">
-              {/* {JSON.stringify(teams)} */}
-              {teams?.map((t, index) => (
-                <TeamList key={index} index={index} t={t} />
+              {teams?.data?.map((team, index) => (
+                <TeamList
+                  deleteTeam={deleteTeam}
+                  key={index}
+                  index={index}
+                  t={team}
+                />
               ))}
-              {/* {playerMeta?.next_page && (
-                <p
-                  ref={bottomRef!}
-                  onClick={async () => await handleLoadMore?.()}
-                  className="text-center bg-zinc-300 mt-2 p-2"
-                >
-                  Loading...
-                </p>
-              )} */}
             </ul>
           )}
         </section>
@@ -108,3 +103,4 @@ export default function Home() {
     </main>
   );
 }
+export default memo(Home);

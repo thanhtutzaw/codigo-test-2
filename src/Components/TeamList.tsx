@@ -1,12 +1,18 @@
-import { TPlayer } from "@/hooks/usePlayer";
-import useTeams from "@/hooks/useTeams";
 import React from "react";
 
-function TeamList({ t, index }: { t: any; index: number }) {
+function TeamList({
+  deleteTeam,
+  t,
+  index,
+}: {
+  deleteTeam: Function;
+  t: any;
+  index: number;
+}) {
   // const { id, full_name, abbreviation, city, conference, division, name } =
   //   team;
   console.log(t);
-  const { deleteTeam, teams, addTeam, teamLoading, teamError } = useTeams();
+
   // return JSON.stringify(t);
   if (!t) return <p>Empty</p>;
   return (
