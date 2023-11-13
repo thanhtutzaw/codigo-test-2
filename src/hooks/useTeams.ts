@@ -14,6 +14,7 @@ export const APIURL = "https://www.balldontlie.io/api/v1/players";
 export type TTeam = {
   id: number;
   name: string;
+  city?: string;
 };
 function useTeams() {
   const [teams, setTeams] = useState<{
@@ -27,11 +28,11 @@ function useTeams() {
   });
   const bottomRef = useRef(null);
   const data = teams.data;
-  const { getLocal, setLocal } = useLocalStorage("data");
-  function addTeam() {
+  const { getLocal, setLocal } = useLocalStorage("teams");
+  function addTeam(newData: any) {
     const lastId = data ? data[data?.length - 1].id : 0;
-    const newTeam = { id: lastId + 1, name: "hello" };
-    setTeams((prev) => ({ ...prev, data: [...teams.data, newTeam] }));
+    const newTeam = { id: lastId + 1, ...newData };
+    setTeams((prev) => ({ ...prev, data: [...teams?.data, newTeam] }));
     setLocal([...(data ?? []), newTeam]);
   }
   function deleteTeam(id: number) {

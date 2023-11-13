@@ -1,10 +1,12 @@
 import PlayerList from "@/Components/PlayerList";
 import TeamList from "@/Components/TeamList";
 import { AuthContext, AuthProps } from "@/context/AuthContext";
-import useTeams from "@/hooks/useTeams";
+import useDebounce from "@/hooks/useDebounce";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import useTeams, { TTeam } from "@/hooks/useTeams";
 import { Inter } from "next/font/google";
 import { useRouter } from "next/router";
-import { memo, useContext, useEffect } from "react";
+import { memo, useContext, useEffect, useRef, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +28,25 @@ function Home() {
     }
   }, [account, router]);
   const { deleteTeam, teams, addTeam } = useTeams();
-
+  const teamModalRef = useRef<HTMLDialogElement>(null);
+  const [TeamNameInput, setTeamNameInput] = useState("");
+  const { debounceValue } = useDebounce(TeamNameInput);
+  const { getLocal } = useLocalStorage("teams");
+  const [TeamNameError, setTeamNameError] = useState("");
+  useEffect(() => {
+    // console.log(debounceValue);
+    const localTeamData = getLocal() as TTeam[];
+    // console.log(localTeamData.filter((t) => t.name === debounceValue));
+    const nameExist = localTeamData.find(
+      (t) => t.name.toLowerCase() === debounceValue.toLowerCase()
+    );
+    if (nameExist) {
+      setTeamNameError("Name Already Exist");
+      return;
+    }
+    setTeamNameError("");
+  }, [debounceValue, getLocal]);
+  const teamFormRef = useRef<HTMLFormElement>(null);
   if (!account) return;
   return (
     <main
@@ -76,7 +96,7 @@ function Home() {
             <div>{teams?.data?.length > 0 && teams?.data?.length}</div>
             <button
               onClick={() => {
-                addTeam();
+                teamModalRef.current && teamModalRef.current.showModal();
               }}
               className="active:bg-gray-100 hover:bg-gray-100 rounded-md active:scale-95 transition:all duration-75 ease-in-out active:opacity-90 p-2"
             >
@@ -88,16 +108,80 @@ function Home() {
           ) : teams.error ? (
             <p>{teams.error}</p>
           ) : (
-            <ul className="bg-white">
-              {teams?.data?.map((team, index) => (
-                <TeamList
-                  deleteTeam={deleteTeam}
-                  key={index}
-                  index={index}
-                  team={team}
-                />
-              ))}
-            </ul>
+            <>
+              <ul className="bg-white">
+                {teams?.data?.map((team, index) => (
+                  <TeamList
+                    deleteTeam={deleteTeam}
+                    key={index}
+                    index={index}
+                    team={team}
+                  />
+                ))}
+              </ul>
+              <dialog
+                className="rounded-md backdrop:bg-black/50"
+                ref={teamModalRef}
+                onClose={() => {
+                  teamFormRef.current?.reset();
+                  setTeamNameError("");
+                }}
+              >
+                <form
+                  ref={teamFormRef}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (TeamNameError) {
+                      return;
+                    }
+                    const form = new FormData(e.currentTarget);
+
+                    addTeam({
+                      name: form.get("teamName"),
+                      city: form.get("city"),
+                    });
+                    teamModalRef?.current?.close();
+                  }}
+                  className=" min-h-[40vh] h-48 p-4 shadow-md flex flex-col gap-4"
+                >
+                  <header className="flex justify-between items-center">
+                    <h1 className="font-bold text-blue-500 text-xl">
+                      Create New Team
+                    </h1>
+                    <button
+                      disabled={!!TeamNameError}
+                      className="disabled:opacity-50 hover:bg-zinc-100 select-none active:scale-95 focus-visible:outline rounded-lg p-2  focus-visible:outline-blue-500"
+                      type="submit"
+                    >
+                      Done
+                    </button>
+                  </header>
+                  {/* <label className="flex flex-col text-gray-500" form="teamName">
+                    Team Name */}
+                  <input
+                    onChange={(e) => {
+                      const name = e.currentTarget.value;
+                      setTeamNameInput(name);
+                    }}
+                    className="border-b border-solid border-gray-400 p-2"
+                    type="text"
+                    name="teamName"
+                    placeholder="Name"
+                    required
+                  />
+                  <p className="text-red-500">
+                    {TeamNameError && TeamNameError}
+                  </p>
+                  <input
+                    className="border-b border-solid border-gray-400 p-2"
+                    type="text"
+                    name="city"
+                    defaultValue="Yangon"
+                    placeholder="City"
+                  />
+                </form>
+              </dialog>
+            </>
           )}
         </section>
       </div>
