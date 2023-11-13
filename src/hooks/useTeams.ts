@@ -11,7 +11,7 @@ export const APIURL = "https://www.balldontlie.io/api/v1/players";
 //   full_name: string;
 //   name: string;
 // };
-type TTeam = {
+export type TTeam = {
   id: number;
   name: string;
 };

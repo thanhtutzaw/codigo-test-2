@@ -72,7 +72,8 @@ function Home() {
 
         <section className="min-h-screen min-w-[48%]  rounded-lg bg-white  ">
           <h2 className="min-h-[60px] items-center shadow-md sticky bg-white top-[65px] flex justify-between p-2 text-blue-500 text-xl my-2">
-            <div>Teams</div> <div>{teams?.data?.length > 0 && teams?.data?.length}</div>
+            <div>Teams</div>{" "}
+            <div>{teams?.data?.length > 0 && teams?.data?.length}</div>
             <button
               onClick={() => {
                 addTeam();
@@ -93,7 +94,7 @@ function Home() {
                   deleteTeam={deleteTeam}
                   key={index}
                   index={index}
-                  t={team}
+                  team={team}
                 />
               ))}
             </ul>
