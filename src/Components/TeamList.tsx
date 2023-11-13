@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 function TeamList({
   deleteTeam,
@@ -37,4 +37,4 @@ function TeamList({
   );
 }
 
-export default TeamList;
+export default memo(TeamList);
